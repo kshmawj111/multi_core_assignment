@@ -9,18 +9,24 @@ import java.util.Map;
 class det_prime extends Thread{
     int num_of_primes = 0;
     long total_milliseconds = 0;
-    ArrayList<Integer> numbers;
+    int[] numbers;
+    int thread_num =0;
+    int num_total_thread = 0;
 
-    det_prime(ArrayList<Integer> numbers){this.numbers = numbers;}
+    det_prime(int[] numbers, int thread_num, int num_total_thread){
+        this.numbers = numbers;
+        this.thread_num=thread_num;
+        this.num_total_thread=num_total_thread;
+    }
 
     public void run(){
         long startTime = System.currentTimeMillis();
         int i;
 
-        for (int x : numbers) {
+        for (int x =thread_num; x<numbers.length; x=x+num_total_thread) {
             boolean is_prime = true;
 
-            for (i = 2; i < x >> 2; i++) {
+            for (i = 2; i < x/2; i++) {
                 if (x % i == 0) {
                     is_prime = false;
                     break;
@@ -43,36 +49,32 @@ public class pc_serial_static {
     private static final int NUM_END = 200000;
     private static final int NUM_THREAD = 4;
     private static final det_prime[] threads = new det_prime[NUM_THREAD]; // det_prime 형 threads 배열 생성
-    private static final Map<Integer, ArrayList<Integer>> numbers = new HashMap<>();
-    private static ArrayList<Object> result = new ArrayList<>();
+    private static final int[] numbers = new int [NUM_END];
 
     public static void main(String[] args){
         initialize();
 
-        for(int i=0; i<NUM_END; i++){
-           threads[i%NUM_THREAD].start();
+        for(int i=0; i<NUM_THREAD; i++){
+           threads[i].start();
         }
 
         for(int i=0; i<NUM_THREAD; i++){
-            ArrayList<Number> temp = (ArrayList<Number>) List.of(threads[i].get_Num_of_primes(), threads[i].get_Total_milliseconds());
-            result.add(temp);
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         print_result();
     }
 
     private static void initialize(){
-        for(int i=0; i< NUM_THREAD; i++){
-            numbers.put(i, new ArrayList<>());
+        for (int i=0; i<NUM_END; i++){
+            numbers[i] = i+1;
         }
-
-        // load balancing considering the size of numbers
-        for(int i=0; i< NUM_END; i++){
-            numbers.get(i%NUM_THREAD).add(i);
-        }
-
         for(int i=0; i<NUM_THREAD; i++){
-            threads[i] = new det_prime(numbers.get(i));
+            threads[i] = new det_prime(numbers, i, NUM_THREAD);
         }
     }
 
