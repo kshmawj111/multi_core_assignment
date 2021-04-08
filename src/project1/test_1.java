@@ -2,7 +2,7 @@ package project1;
 
 public class test_1 {
     public static void main(String[] args) {
-        int[] num_threads = {6};
+        int[] num_threads = {4};
 
         long s = System.currentTimeMillis();
         csv_writer writer = new csv_writer("result_static", "src/project1");
@@ -13,6 +13,7 @@ public class test_1 {
         }
         long e = System.currentTimeMillis();
         writer.write_csv();
+
 
         long s_d = System.currentTimeMillis();
         writer = new csv_writer("result_dynamic", "src/project1");

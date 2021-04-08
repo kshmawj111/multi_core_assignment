@@ -50,7 +50,6 @@ public class pc_dynamic {
     private static final int NUM_END = 100000;
     private static int NUM_THREAD;
     private static csv_writer writer;
-    private static ArrayDeque<Integer> tasks;
     private static Long exe_times;
     private static int num_primes;
     private static int counter;
@@ -73,12 +72,12 @@ public class pc_dynamic {
         i = 0;
         while(current_num < NUM_END){
 
-            i = (i + 1) % NUM_THREAD;
             fetch_task(i);
+            thread_pool[i].set_X(current_num);
+            i = (i+1)%NUM_THREAD;
+            end_task();
             thread_pool[i].run();
 
-
-            end_task();
 
         }
 
@@ -94,18 +93,11 @@ public class pc_dynamic {
     }
 
     private void initialize(){
-        tasks = new ArrayDeque<>();
         thread_pool = new isPrimeDynamic[NUM_THREAD];
         exe_times = (long) 0;
         counter = NUM_THREAD;
         num_primes = 0;
         current_num = 0;
-
-        tasks.add(2);
-        for (int i=3; i<NUM_END; i=i+2){
-            tasks.add(i);
-        }
-
 
         for(int i = 0; i<NUM_THREAD; i++){
             thread_pool[i] = new isPrimeDynamic(i);
@@ -121,9 +113,8 @@ public class pc_dynamic {
                 e.printStackTrace();
             }
         }
-        thread_pool[i].set_X(current_num++);
+        current_num++;
         counter--;
-
     }
 
     private synchronized void end_task(){
