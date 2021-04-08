@@ -2,15 +2,15 @@ package project1;
 
 
 import java.util.ArrayDeque;
-import java.util.Queue;
 
 
-class isPrimeDynamic implements Runnable{
+class isPrimeDynamic extends Thread{
         int num_of_primes = 0;
         long total_milliseconds = 0;
+        int id;
         int x;
 
-        isPrimeDynamic(int x){this.x=x;}
+        isPrimeDynamic(int id){this.id=id;}
 
         public void run(){
             long startTime = System.currentTimeMillis();
@@ -21,9 +21,8 @@ class isPrimeDynamic implements Runnable{
             if (x<=1){
                 is_prime=false;
             }
-
             else {
-                for (i = 2; i < x/2; i++) {
+                for (i = 2; i < x; i++) {
                     if (x % i == 0) {
                         is_prime = false;
                         break;
@@ -31,14 +30,14 @@ class isPrimeDynamic implements Runnable{
                 }
             }
             long endTime = System.currentTimeMillis();
-            total_milliseconds = (endTime - startTime); // record execution time
+            total_milliseconds += (endTime - startTime); // record execution time
 
             if (is_prime) {
                 num_of_primes++;
             }
 
         }
-
+        public void set_X(int x) {this.x = x;}
         public long get_Total_milliseconds(){return total_milliseconds;}
         public int get_Num_of_primes(){return num_of_primes;}
 
@@ -46,79 +45,97 @@ class isPrimeDynamic implements Runnable{
 
 
 
-public class pc_serial_dynamic {
+public class pc_dynamic {
     private static final int NUM_END = 200000;
     private static int NUM_THREAD;
     private static csv_writer writer;
-    private static Queue<Integer> tasks;
-    private static Long[] exe_times;
+    private static ArrayDeque<Integer> tasks;
+    private static Long exe_times;
     private static int num_primes;
     private static int counter;
+    private isPrimeDynamic[] thread_pool;
+    private static int current_num;
 
-    pc_serial_dynamic(int num_thread, csv_writer csv_writer){
+    pc_dynamic(int num_thread, csv_writer csv_writer){
         NUM_THREAD = num_thread;
         writer = csv_writer;
     }
 
     public void run_test(){
         initialize();
+        int i=0;
 
-        while(!tasks.isEmpty()){
-            int temp = fetch_task();
-            isPrimeDynamic det = new isPrimeDynamic(temp);
-            det.run();
-            end_task(det);
+        for(i=0; i<NUM_THREAD; i++){
+            thread_pool[i].start();
+        }
+
+        i = 0;
+        while(current_num < NUM_END){
+
+            if (!thread_pool[i].isAlive()) {
+                fetch_task(i);
+                thread_pool[i].run();
+                i = (i + 1) % NUM_THREAD;
+            }
+
+            end_task();
 
         }
 
         print_result();
     }
 
-    private static void initialize(){
+    private void initialize(){
         tasks = new ArrayDeque<>();
-        exe_times = new Long[NUM_THREAD];
+        thread_pool = new isPrimeDynamic[NUM_THREAD];
+        exe_times = (long) 0;
         counter = NUM_THREAD;
+        num_primes = 0;
+        current_num = 0;
 
-        for (int i=0; i<NUM_END;i++){
-            tasks.add(i+1);
+        tasks.add(2);
+
+        for (int i=3; i<NUM_END; i=i+2){
+            tasks.add(i);
         }
 
+
         for(int i = 0; i<NUM_THREAD; i++){
-            exe_times[i] = (long)0;
+            thread_pool[i] = new isPrimeDynamic(i);
         }
 
     }
 
-    public void change_num_threads(int num) {NUM_THREAD = num;}
-
-    private synchronized int fetch_task(){
-        while (counter ==0){
+    private synchronized void fetch_task(int i){
+        while (counter <= 0){
             try {
                 wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        thread_pool[i].set_X(current_num++);
         counter--;
-        return tasks.poll();
+
     }
 
-    private synchronized void end_task(isPrimeDynamic obj){
-        num_primes += obj.get_Num_of_primes();
-        exe_times[(int)Thread.currentThread().getId()] += obj.get_Total_milliseconds();
+    private synchronized void end_task(){
         counter++;
         notify();
-    }
 
-    private static void print_result(){
+    }
+    private void print_result(){
         // writer.add_content(NUM_THREAD, total_time);
         // System.out.println("Total " + num_primes + " prime numbers between 1 and "+ NUM_END+"\n\n");
 
         for(int i=0; i<NUM_THREAD; i++){
-            System.out.println("Thread "+ i + ": " + exe_times[i]);
+            System.out.println("Thread "+ thread_pool[i].id + ": " + thread_pool[i].get_Total_milliseconds());
+            num_primes += thread_pool[i].get_Num_of_primes();
+            exe_times += thread_pool[i].get_Total_milliseconds();
         }
 
-        System.out.println("total: "+num_primes);
+        System.out.println("total primes : "+num_primes + " Total time : " + exe_times);
+        writer.add_content(NUM_THREAD, exe_times);
     }
 
 }

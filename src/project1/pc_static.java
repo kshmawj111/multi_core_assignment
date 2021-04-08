@@ -30,12 +30,12 @@ class isPrime_static extends Thread{
                     }
                 }
             }
-            total_milliseconds += (System.currentTimeMillis() - startTime); // record execution time
 
             if (is_prime) {
                 num_of_primes++;
             }
         }
+        total_milliseconds += (System.currentTimeMillis() - startTime); // record execution time
     }
 
     public long get_Total_milliseconds(){return total_milliseconds;}
@@ -43,13 +43,13 @@ class isPrime_static extends Thread{
 }
 
 
-public class pc_serial_static {
+public class pc_static {
     private static final int NUM_END = 200000;
     private static int NUM_THREAD;
     private static isPrime_static[] threads;
     private static csv_writer writer;
 
-    pc_serial_static(int num_thread, csv_writer csv_writer){
+    pc_static(int num_thread, csv_writer csv_writer){
         NUM_THREAD = num_thread;
         writer = csv_writer;
     }
