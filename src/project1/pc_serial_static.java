@@ -5,9 +5,7 @@ import java.lang.Thread;
 class det_prime extends Thread{
     int num_of_primes = 0;
     long total_milliseconds = 0;
-    int start =0;
-    int end = 0;
-    int num_thread=0;
+    int start, end, num_thread;
 
     det_prime(int start, int end, int num_thread){
         this.start = start;
@@ -47,8 +45,9 @@ class det_prime extends Thread{
 
 public class pc_serial_static {
     private static final int NUM_END = 200000;
-    private static final int NUM_THREAD = 4;
+    private static int NUM_THREAD;
     private static final det_prime[] threads = new det_prime[NUM_THREAD]; // det_prime 형 threads 배열 생성
+    private static csv_writer writer;
 
     public static void main(String[] args){
         initialize();
@@ -72,16 +71,21 @@ public class pc_serial_static {
         for(int i=0; i<NUM_THREAD; i++){
             threads[i] = new det_prime(i, NUM_END, NUM_THREAD);
         }
+        writer = new csv_writer("result_static", "src/project1");
     }
 
     private static void print_result(){
         int total_primes = 0;
+        long total_time = 0;
 
         for(int i=0; i<NUM_THREAD; i++){
             System.out.println("Thread " + i + " execution time : "+ threads[i].get_Total_milliseconds());
             total_primes += threads[i].get_Num_of_primes();
+            total_time += threads[i].get_Total_milliseconds();
         }
 
+        writer.add_content(NUM_THREAD, total_time);
+        writer.write_csv();
         System.out.println("Total " + total_primes + " prime numbers between 1 and "+ NUM_END);
 
     }
