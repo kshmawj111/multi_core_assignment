@@ -2,7 +2,7 @@ package project1;
 
 public class test_1 {
     public static void main(String[] args) {
-        int[] num_threads = {4, 8, 16};
+        int[] num_threads = {1, 2, 4, 6, 8, 10, 12, 14, 16, 32};
 
         csv_writer writer = new csv_writer("result_static", "src/project1");
 
