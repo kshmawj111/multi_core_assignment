@@ -1,8 +1,8 @@
 package project1;
 
 public class pc_serial {
-    private static final int NUM_END = 100;
-    private static final int NUM_THREAD = 4;
+    private static final int NUM_END = 200000;
+    private static final int NUM_THREAD = 8;
 
     public static void main(String[] args) {
         int counter=0, i=0;
@@ -12,6 +12,8 @@ public class pc_serial {
             if (isPrime(i)) counter++;
         }
         System.out.println(counter);
+        long end = System.currentTimeMillis();
+        System.out.println(end-start);
 
     }
 

@@ -2,12 +2,12 @@ package project1;
 import java.lang.Thread;
 
 
-class det_prime extends Thread{
+class isPrime_static extends Thread{
     int num_of_primes = 0;
     long total_milliseconds = 0;
     int start, end, num_thread;
 
-    det_prime(int start, int end, int num_thread){
+    isPrime_static(int start, int end, int num_thread){
         this.start = start;
         this.end = end;
         this.num_thread = num_thread;
@@ -46,10 +46,15 @@ class det_prime extends Thread{
 public class pc_serial_static {
     private static final int NUM_END = 200000;
     private static int NUM_THREAD;
-    private static final det_prime[] threads = new det_prime[NUM_THREAD]; // det_prime 형 threads 배열 생성
+    private static isPrime_static[] threads;
     private static csv_writer writer;
 
-    public static void main(String[] args){
+    pc_serial_static(int num_thread, csv_writer csv_writer){
+        NUM_THREAD = num_thread;
+        writer = csv_writer;
+    }
+
+    public void run_test(){
         initialize();
 
         for(int i=0; i<NUM_THREAD; i++){
@@ -67,11 +72,14 @@ public class pc_serial_static {
         print_result();
     }
 
+    public void change_num_threads(int num) {NUM_THREAD = num;}
+
     private static void initialize(){
+        threads = new isPrime_static[NUM_THREAD]; // det_prime 형 threads 배열 생성
+
         for(int i=0; i<NUM_THREAD; i++){
-            threads[i] = new det_prime(i, NUM_END, NUM_THREAD);
+            threads[i] = new isPrime_static(i, NUM_END, NUM_THREAD);
         }
-        writer = new csv_writer("result_static", "src/project1");
     }
 
     private static void print_result(){
@@ -85,8 +93,7 @@ public class pc_serial_static {
         }
 
         writer.add_content(NUM_THREAD, total_time);
-        writer.write_csv();
-        System.out.println("Total " + total_primes + " prime numbers between 1 and "+ NUM_END);
+        System.out.println("Total " + total_primes + " prime numbers between 1 and "+ NUM_END+"\n\n");
 
     }
 
