@@ -29,12 +29,13 @@ class isPrimeDynamic extends Thread{
                     }
                 }
             }
-            long endTime = System.currentTimeMillis();
-            total_milliseconds += (endTime - startTime); // record execution time
 
             if (is_prime) {
                 num_of_primes++;
             }
+
+            long endTime = System.currentTimeMillis();
+            total_milliseconds += (endTime - startTime); // record execution time
 
         }
         public void set_X(int x) {this.x = x;}
@@ -46,7 +47,7 @@ class isPrimeDynamic extends Thread{
 
 
 public class pc_dynamic {
-    private static final int NUM_END = 200000;
+    private static final int NUM_END = 100000;
     private static int NUM_THREAD;
     private static csv_writer writer;
     private static ArrayDeque<Integer> tasks;
@@ -72,14 +73,21 @@ public class pc_dynamic {
         i = 0;
         while(current_num < NUM_END){
 
-            if (!thread_pool[i].isAlive()) {
-                fetch_task(i);
-                thread_pool[i].run();
-                i = (i + 1) % NUM_THREAD;
-            }
+            i = (i + 1) % NUM_THREAD;
+            fetch_task(i);
+            thread_pool[i].run();
+
 
             end_task();
 
+        }
+
+        for(i=0; i<NUM_THREAD; i++){
+            try {
+                thread_pool[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         print_result();
@@ -94,7 +102,6 @@ public class pc_dynamic {
         current_num = 0;
 
         tasks.add(2);
-
         for (int i=3; i<NUM_END; i=i+2){
             tasks.add(i);
         }
@@ -107,7 +114,7 @@ public class pc_dynamic {
     }
 
     private synchronized void fetch_task(int i){
-        while (counter <= 0){
+        if (counter <= 0){
             try {
                 wait();
             } catch (InterruptedException e) {

@@ -44,7 +44,7 @@ class isPrime_static extends Thread{
 
 
 public class pc_static {
-    private static final int NUM_END = 200000;
+    private static final int NUM_END = 100000;
     private static int NUM_THREAD;
     private static isPrime_static[] threads;
     private static csv_writer writer;
@@ -74,7 +74,7 @@ public class pc_static {
 
     public void change_num_threads(int num) {NUM_THREAD = num;}
 
-    private static void initialize(){
+    private void initialize(){
         threads = new isPrime_static[NUM_THREAD]; // det_prime 형 threads 배열 생성
 
         for(int i=0; i<NUM_THREAD; i++){
