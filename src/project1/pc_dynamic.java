@@ -47,7 +47,7 @@ class isPrimeDynamic extends Thread{
 
 
 public class pc_dynamic {
-    private static final int NUM_END = 100000;
+    private static final int NUM_END = 200000;
     private static int NUM_THREAD;
     private static csv_writer writer;
     private static Long exe_times;
@@ -73,10 +73,10 @@ public class pc_dynamic {
         while(current_num < NUM_END){
 
             fetch_task(i);
-            thread_pool[i].set_X(current_num);
+
+            thread_pool[i].run();
             i = (i+1)%NUM_THREAD;
             end_task();
-            thread_pool[i].run();
 
 
         }
@@ -113,8 +113,12 @@ public class pc_dynamic {
                 e.printStackTrace();
             }
         }
-        current_num++;
-        counter--;
+        if(!thread_pool[i].isAlive()) { // i번째 스레드가 활성화 되있지 않다면
+            // thread가 조사할 값 업데이트
+            thread_pool[i].set_X(current_num);
+            current_num++;
+            counter--;
+        }
     }
 
     private synchronized void end_task(){

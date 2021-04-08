@@ -44,7 +44,7 @@ class isPrime_static extends Thread{
 
 
 public class pc_static {
-    private static final int NUM_END = 100000;
+    private static final int NUM_END = 200000;
     private static int NUM_THREAD;
     private static isPrime_static[] threads;
     private static csv_writer writer;
@@ -93,7 +93,7 @@ public class pc_static {
         }
 
         writer.add_content(NUM_THREAD, total_time);
-        System.out.println("Total " + total_primes + " prime numbers between 1 and "+ NUM_END+"\n\n");
+        System.out.println("total primes : "+ total_primes + " Total time : " + total_time);
 
     }
 
