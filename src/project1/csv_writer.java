@@ -8,9 +8,12 @@ import java.util.ArrayList;
 public class csv_writer {
     String filename;
     String file_path;
-    ArrayList<ArrayList<Object>> _buffer = new ArrayList<ArrayList<Object>>();
+    ArrayList<ArrayList<Object>> _buffer = new ArrayList<>();
 
     public csv_writer(String file_name, String file_path) {
+        /*
+        *  arg1: file name, arg2: file path
+        * */
         this.filename = file_name;
         this.file_path = file_path;
         add_content("num threads", "exe_time");
