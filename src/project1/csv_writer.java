@@ -10,7 +10,7 @@ public class csv_writer {
     String file_path;
     ArrayList<ArrayList<Object>> _buffer = new ArrayList<ArrayList<Object>>();
 
-    csv_writer(String file_name, String file_path) {
+    public csv_writer(String file_name, String file_path) {
         this.filename = file_name;
         this.file_path = file_path;
         add_content("num threads", "exe_time");

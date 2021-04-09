@@ -1,5 +1,0 @@
-Thread 0 execution time : 9348701
-Thread 1 execution time : 30538133
-Thread 2 execution time : 50566903
-Thread 3 execution time : 72403979
-Total 17984 prime numbers between 1 and 200000

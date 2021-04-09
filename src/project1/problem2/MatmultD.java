@@ -1,7 +1,9 @@
+package project1.problem2;
+
 import java.util.*;
 import java.lang.*;
 
-// command-line execution example) java MatmultD 6 < mat500.txt
+// command-line execution example) java project1.problem2.MatmultD 6 < mat500.txt
 // 6 means the number of threads to use
 // < mat500.txt means the file that contains two matrices is given as standard input
 //
@@ -11,12 +13,16 @@ import java.lang.*;
 public class MatmultD
 {
   private static Scanner sc = new Scanner(System.in);
+  private static String file_name;
+
   public static void main(String [] args)
   {
     int thread_no=0;
     if (args.length==1) thread_no = Integer.valueOf(args[0]);
     else thread_no = 1;
-        
+
+    file_name = sc.next();
+
     int a[][]=readMatrix();
     int b[][]=readMatrix();
 
