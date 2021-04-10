@@ -33,8 +33,8 @@ class VectorMult extends Thread{
             int sum = IntStream.range(0, _row.length).map(i -> _row[i] * _col[i]).sum(); // sum product of two arrays
 
             ArrayList<Integer> loc = new ArrayList<>();
-            loc.add((Integer) task.get(2));
-            loc.add((Integer) task.get(3));
+            loc.add((Integer) task.get(2)); // row
+            loc.add((Integer) task.get(3)); // col
             result.put(loc, sum);
         }
         long end = System.currentTimeMillis();
@@ -70,7 +70,7 @@ public class Matrix {
 
     public int[][] mult(Matrix B){
         long start = System.currentTimeMillis();
-        int[][] bt = B.transpose();
+        int[][] bt = B.transpose(); // Transposing Matrix B follows temporal locality of memory.
         allocate_vectors(elements, bt);
 
         for(int i=0; i<num_threads; i++){
