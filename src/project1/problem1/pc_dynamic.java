@@ -3,8 +3,6 @@ package project1.problem1;
 
 import project1.csv_writer;
 
-import java.util.ArrayDeque;
-
 
 class isPrimeDynamic extends Thread{
         int num_of_primes = 0;
@@ -52,8 +50,6 @@ public class pc_dynamic {
     private static final int NUM_END = 200000;
     private static int NUM_THREAD;
     private static csv_writer writer;
-    private static Long exe_times;
-    private static int num_primes;
     private isPrimeDynamic[] thread_pool;
     private static int current_num;
 
@@ -64,7 +60,7 @@ public class pc_dynamic {
 
     public void run_test(){
         initialize();
-        int i=0;
+        int i;
 
         for(i=0; i<NUM_THREAD; i++){
             thread_pool[i].start();
@@ -94,8 +90,6 @@ public class pc_dynamic {
 
     private void initialize(){
         thread_pool = new isPrimeDynamic[NUM_THREAD];
-        exe_times = (long) 0;
-        num_primes = 0;
         current_num = 0;
 
         for(int i = 0; i<NUM_THREAD; i++){
@@ -117,18 +111,18 @@ public class pc_dynamic {
     }
 
     private void print_result(){
-        // writer.add_content(NUM_THREAD, total_time);
-        // System.out.println("Total " + num_primes + " prime numbers between 1 and "+ NUM_END+"\n\n");
+        int total_primes = 0;
+        long total_time = 0;
 
         for(int i=0; i<NUM_THREAD; i++){
-            System.out.println("Thread "+ thread_pool[i].id + ": " + thread_pool[i].get_Total_milliseconds() + " and " +
-                    thread_pool[i].num_calls + "calls");
-            num_primes += thread_pool[i].get_Num_of_primes();
-            exe_times += thread_pool[i].get_Total_milliseconds();
+            System.out.println("Thread "+ i + ": " + thread_pool[i].get_Total_milliseconds() + "msec");
+            total_primes += thread_pool[i].get_Num_of_primes();
+            total_time += thread_pool[i].get_Total_milliseconds();
         }
 
-        System.out.println("total primes : "+num_primes + " Total time : " + exe_times + "\n\n");
-        writer.add_content(NUM_THREAD, exe_times);
+        writer.add_content(NUM_THREAD, total_time);
+        System.out.println("total primes : "+ total_primes + " Avg time per thread : " + total_time/(double)NUM_THREAD + "msec\n\n");
+
     }
 
 }

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 class isPrime_static extends Thread{
     private int num_of_primes = 0;
     private long total_milliseconds = 0;
-    private int num_calls = 0;
     private ArrayList<Integer> task_queue = new ArrayList<>();
 
     isPrime_static(){}
@@ -20,8 +19,6 @@ class isPrime_static extends Thread{
         int i;
 
         for (int x: task_queue) {
-            num_calls++;
-
             boolean is_prime = true;
             /*
             Algorithms to determine a number is prime or not
@@ -49,7 +46,6 @@ class isPrime_static extends Thread{
 
     public long get_Total_milliseconds(){return total_milliseconds;}
     public int get_Num_of_primes(){return num_of_primes;}
-    public int get_Num_calls(){return num_calls;}
 }
 
 
@@ -89,6 +85,7 @@ public class pc_static {
             thread_pool[i] = new isPrime_static();
         }
 
+        // allocating tasks
         for (int i=0; i<NUM_END; i++){
             thread_pool[i%NUM_THREAD].insert_task(i+1);
         }
@@ -99,14 +96,13 @@ public class pc_static {
         long total_time = 0;
 
         for(int i=0; i<NUM_THREAD; i++){
-            System.out.println("Thread "+ i + ": " + thread_pool[i].get_Total_milliseconds() + " and " +
-                    thread_pool[i].get_Num_calls() + "calls");
+            System.out.println("Thread "+ i + ": " + thread_pool[i].get_Total_milliseconds() + "msec");
             total_primes += thread_pool[i].get_Num_of_primes();
             total_time += thread_pool[i].get_Total_milliseconds();
         }
 
         writer.add_content(NUM_THREAD, total_time);
-        System.out.println("total primes : "+ total_primes + " Total time : " + total_time + "\n\n");
+        System.out.println("total primes : "+ total_primes + " Avg time per thread : " + total_time/(double)NUM_THREAD + "msec\n\n");
 
     }
 
