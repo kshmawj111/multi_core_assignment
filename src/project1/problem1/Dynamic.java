@@ -4,20 +4,47 @@ import project1.csv_writer;
 
 import java.util.ArrayDeque;
 
+class TaskQueue {
+    private ArrayDeque<Integer> task = new ArrayDeque<>();
+    private int size = 0;
+
+    public synchronized void add(int num){
+        task.add(num);
+        size += 1;
+    }
+
+    public synchronized int poll(){
+        if (!isEmpty()) {
+            size-= 1;
+            return task.poll();
+        }
+        return -1;
+    }
+
+    public synchronized boolean isEmpty(){
+        if(size<=0){
+            return true;
+        }
+        else return false;
+    }
+}
+
+
 
 class PrimeThreadDynamic extends Thread{
     int id;
     private int num_of_primes;
     private long total_milliseconds;
     private int target_num;
-    private ArrayDeque<Integer> tq;
+    private TaskQueue tq;
 
-    PrimeThreadDynamic(int i, ArrayDeque<Integer> q){id=i; tq=q;}
+    PrimeThreadDynamic(int i, TaskQueue q){id=i; tq=q;}
 
     public void run(){
 
         long startTime = System.currentTimeMillis();
-        while (fetch()) {
+        while (!tq.isEmpty()) {
+            fetch();
             // System.out.println(id + ": running on " + target_num);
 
             int i;
@@ -38,13 +65,15 @@ class PrimeThreadDynamic extends Thread{
                 num_of_primes++;
             }
 
-            long endTime = System.currentTimeMillis();
-            total_milliseconds += (endTime - startTime); // record execution time
         }
+
+        long endTime = System.currentTimeMillis();
+        total_milliseconds += (endTime - startTime); // record execution time
     }
 
     public long get_Total_milliseconds(){return total_milliseconds;}
     public int get_Num_of_primes(){return num_of_primes;}
+
 
     public synchronized boolean fetch(){
         if (!tq.isEmpty()) {
@@ -59,7 +88,7 @@ class PrimeThreadDynamic extends Thread{
 }
 
 public class Dynamic extends PrimeAbstract{
-    private static final ArrayDeque<Integer> task_queue = new ArrayDeque<>();
+    private final TaskQueue task_queue = new TaskQueue();
     private static PrimeThreadDynamic[] th;
 
     Dynamic(int num_thread, csv_writer writer){

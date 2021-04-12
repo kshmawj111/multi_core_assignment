@@ -5,7 +5,7 @@ import project1.csv_writer;
 public class test_1 {
     public static void main(String[] args) {
 
-         int[] num_threads = {1, 2, 4, 6, 8, 10, 12, 14, 16, 32};
+        int[] num_threads = {1, 2, 4, 6, 8, 10, 12, 14, 16, 32, 64};
 
         csv_writer writer = new csv_writer("result_static", "src/project1/problem1");
 
@@ -16,7 +16,7 @@ public class test_1 {
         writer.write_csv();
 
 
-        writer = new csv_writer("result_dynamic", "src/project1/problem1");
+       writer = new csv_writer("result_dynamic", "src/project1/problem1");
 
         for(int num_thread : num_threads){
             Dynamic t2 = new Dynamic(num_thread, writer);

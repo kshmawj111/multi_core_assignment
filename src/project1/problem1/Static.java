@@ -80,7 +80,6 @@ public class Static extends PrimeAbstract {
     @Override
     protected void initialize() {
         threads = new PrimeThreadStatic[NUM_THREAD];
-
         for (int i=0; i<NUM_THREAD; i++){
             threads[i] = new PrimeThreadStatic();
         }
