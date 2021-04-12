@@ -3,7 +3,7 @@ import project1.csv_writer;
 
 
 public abstract class PrimeAbstract {
-    protected static final int NUM_END = 100;
+    protected static final int NUM_END = 200000;
     protected static int NUM_THREAD;
     protected static csv_writer writer;
     protected PrimeThread[] threads;
