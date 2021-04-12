@@ -16,13 +16,14 @@ public class csv_writer {
         * */
         this.filename = file_name;
         this.file_path = file_path;
-        add_content("num threads", "exe_time");
+        add_content("num threads", "exe_time", "avg_time_per_thread");
     }
 
-    public void add_content(Object num_thread, Object exe_time){
+    public void add_content(Object num_thread, Object exe_time, Object avg){
         ArrayList<Object> temp = new ArrayList<>();
         temp.add(num_thread.toString());
         temp.add(exe_time.toString());
+        temp.add(avg.toString());
         _buffer.add(temp);
     }
 
@@ -31,7 +32,7 @@ public class csv_writer {
             BufferedWriter fw = new BufferedWriter(new FileWriter(file_path + "/"+filename+".csv", true));
 
             for (ArrayList<Object> e: _buffer){
-                fw.write(e.get(0) +","+ e.get(1));
+                fw.write(e.get(0) +","+ e.get(1)+","+e.get(2));
                 fw.newLine();
 
             }

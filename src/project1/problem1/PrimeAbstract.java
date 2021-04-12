@@ -3,7 +3,7 @@ import project1.csv_writer;
 
 
 public abstract class PrimeAbstract {
-    protected static final int NUM_END = 100000;
+    protected static final int NUM_END = 100;
     protected static int NUM_THREAD;
     protected static csv_writer writer;
     protected PrimeThread[] threads;
@@ -18,14 +18,18 @@ public abstract class PrimeAbstract {
 
     protected void print_result(long total_time){
         int total_primes = 0;
+        long avg_time=0;
 
         for(int i=0; i<NUM_THREAD; i++){
-            System.out.println("Thread "+ i + ": " + threads[i].get_Total_milliseconds() + "msec");
-            total_primes += threads[i].get_Num_of_primes();
+            PrimeThread t = threads[i];
+            avg_time += t.get_Total_milliseconds();
+            System.out.println("Thread "+ i + ": " + t.get_Total_milliseconds() + "msec");
+            total_primes += t.get_Num_of_primes();
         }
 
-        writer.add_content(NUM_THREAD, total_time);
-        System.out.println("total primes : "+ total_primes + " Avg time per thread : " + total_time/(double)NUM_THREAD + "msec\n\n");
+        String avg =  String.format("%.4f", avg_time/(double)NUM_THREAD);
+        writer.add_content(NUM_THREAD, total_time, avg);
+        System.out.println("total primes : "+ total_primes + " Avg time per thread : " + avg + "msec\n\n");
 
     }
 }

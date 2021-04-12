@@ -44,7 +44,7 @@ public class test2 {
         System.out.printf(" Avg Cal Time per thread: %f ms\n" , pure_cal_time/(double)thread_no);
         System.out.printf("Total Calculation Time: %d ms\n\n" , endTime-startTime);
 
-        writer.add_content(thread_no, endTime-startTime);
+        writer.add_content(thread_no, endTime-startTime, String.format("%.4f", pure_cal_time/(double)thread_no));
     }
 
     public static void printMatrix(int[][] mat) {

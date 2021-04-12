@@ -1,20 +1,56 @@
 package project1.problem1;
+
 import project1.csv_writer;
 
 import java.util.ArrayDeque;
-import java.util.concurrent.Semaphore;
+import java.util.LinkedList;
+import java.util.Random;
+
+class ThreadQueue {
+    private final LinkedList<PrimeThreadDynamic> queue  = new LinkedList<>();
+
+    public void insert_thread(PrimeThreadDynamic t){
+        change_queue_order();
+        queue.add(t);
+    }
+
+    private void change_queue_order(){
+        for(int i=0; i<queue.size(); i++){
+            if(queue.get(i).isAlive()){
+                PrimeThreadDynamic t = queue.remove(i);
+                queue.add(t);
+
+            }
+        }
+    }
+
+    private PrimeThreadDynamic poll(){
+        return queue.remove(0);
+    }
+}
 
 
-class PrimeThreadDynamic implements Runnable{
-    int thread_number;
-    private long total_milliseconds;
+class PrimeThreadDynamic extends Thread{
+    int id;
     private int num_of_primes;
+    private long total_milliseconds;
+    private int target_num;
+    private ArrayDeque<PrimeThreadDynamic> wq;
 
-    PrimeThreadDynamic(int x){thread_number=x;}
+    PrimeThreadDynamic(int i, ArrayDeque<PrimeThreadDynamic> wait_q){id=i; wq=wait_q;}
 
     public void run(){
-        System.out.println(thread_number+" running\n");
-        /*long startTime = System.currentTimeMillis();
+        System.out.println(id+": running on " + target_num + "\n");
+        Random r = new Random();
+        try {
+            if(id==0) {
+                Thread.sleep(r.nextInt(5000));
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        long startTime = System.currentTimeMillis();
+
         int i;
         boolean is_prime = true;
 
@@ -35,23 +71,22 @@ class PrimeThreadDynamic implements Runnable{
         }
 
         long endTime = System.currentTimeMillis();
-        total_milliseconds += (endTime - startTime); // record execution time*/
-
+        total_milliseconds += (endTime - startTime); // record execution time
+        wq.add(this); // 작업 끝나면 q 맨 뒤로 이동
     }
+
     public long get_Total_milliseconds(){return total_milliseconds;}
     public int get_Num_of_primes(){return num_of_primes;}
-
-    public PrimeThreadDynamic get_currentThread(){return this;}
+    public synchronized void fetch_and_run(int num){
+        target_num= num;
+        this.run();
+    }
 
 }
 
-
-
 public class Dynamic extends PrimeAbstract{
-    private static int current_num;
-    private static ArrayDeque<PrimeThreadDynamic> thread_queue = new ArrayDeque<>();
-    PrimeThreadDynamic threads_list[];
-    private static Semaphore sem;
+    private static final ArrayDeque<PrimeThreadDynamic> wait_queue = new ArrayDeque<>();
+    private int current_num=1;
 
     Dynamic(int num_thread, csv_writer writer){
         super(num_thread, writer);
@@ -61,24 +96,17 @@ public class Dynamic extends PrimeAbstract{
         long start_time = System.currentTimeMillis();
 
         initialize();
-        int i;
 
-        for(i=0; i<NUM_THREAD; i++){
-            threads_list[i].start();
+        while (current_num<NUM_END) {
+
+            wait_queue.poll().fetch_and_run(current_num++); // synchronized method call
+            current_num++;
         }
 
-        while(current_num < NUM_END){
-            try {
-                fetch_and_run_task(thread_queue.poll());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            end_tast();
-        }
+        for(PrimeThreadDynamic t: wait_queue){
 
-        for(i=0; i<NUM_THREAD; i++){
             try {
-                threads_list[i].join(); // 마지막 숫자까지 진행했다면 join으로 대기
+                t.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -86,30 +114,32 @@ public class Dynamic extends PrimeAbstract{
 
         long end_time = System.currentTimeMillis();
         print_result(end_time-start_time);
+
     }
 
     protected void initialize(){
-        threads_list = new PrimeThreadDynamic[NUM_THREAD];
-        current_num = 0;
-        sem = new Semaphore(NUM_THREAD);
 
         for(int i=0; i<NUM_THREAD; i++){
-            PrimeThreadDynamic t = new PrimeThreadDynamic();
-            thread_queue.add(t);
-            threads_list[i] = t;
+            PrimeThreadDynamic r = new PrimeThreadDynamic(i, wait_queue);
+            wait_queue.add(r);
         }
 
     }
 
-    private void fetch_and_run_task(PrimeThreadDynamic t) throws InterruptedException {
-        sem.acquire(NUM_THREAD);
-        t.setTarget_num(current_num++);
-        t.run();
+    protected void print_result(long total_time){
+        int total_primes = 0;
+        long avg_time=0;
 
-    }
+        for(int i=0; i<NUM_THREAD; i++){
+            PrimeThreadDynamic t = wait_queue.poll();
+            avg_time += t.get_Total_milliseconds();
+            System.out.println("Thread "+ i + ": " + t.get_Total_milliseconds() + "msec");
+            total_primes += t.get_Num_of_primes();
+        }
 
-    private synchronized void end_tast(){
-        sem.release();
+        String avg = String.format("%.4f", avg_time/(double)NUM_THREAD);
+        writer.add_content(NUM_THREAD, total_time, avg);
+        System.out.println("total primes : "+ total_primes + " Avg time per thread : " + avg + "msec\n\n");
 
     }
 }
