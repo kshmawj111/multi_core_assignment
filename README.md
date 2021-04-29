@@ -7,7 +7,7 @@
     Static은 그냥 할당, Dynamic은 Task Queue를 스레드끼리 공유하도록 하여 
     
 결과:
-    Static의 Load balance를 thread 갯수만큼 순회하며 1부터 200000까지 작업을 할당 했는데 짝수번째만 들어가게 되어 매우 안 좋은 Load Balance를 보임
+   Static의 Load balance를 thread 갯수만큼 순회하며 1부터 200000까지 작업을 할당 했는데 짝수번째만 들어가게 되어 매우 안 좋은 Load Balance를 보임
     
    Dynamic의 경우는 공유 작업 큐를 만들어 각 스레드가 race-condition에서 FIFO 정책에 따라 작업을 가져와 수행하도록 하여 매우 좋은 Load Balacne를 보여줌
     
@@ -17,6 +17,8 @@
     
    ![image](https://user-images.githubusercontent.com/45940359/116524522-71e0de80-a912-11eb-8efc-c32dbe0698c7.png)
 
+
+## Problem 2
 
 2) Matrix Multiplication Static Load Balance를 통해 구현
 
